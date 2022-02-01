@@ -14,6 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        toolchain:
+          - stable
+          - beta
+          - nightly
+          - 1.58.0 # msrv
         config:
           - node: ubuntu-latest
           - node: windows-latest
@@ -25,7 +30,7 @@ jobs:
 
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: ${{ matrix.toolchain }}
           override: true
 
       - uses: Swatinem/rust-cache@v1.3.0
@@ -46,6 +51,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        toolchain:
+          - stable
+          - beta
+          - nightly
+          - 1.58.0 # msrv
         config:
           # ubuntu aarch64 incl android
           - node: ubuntu-latest
@@ -62,8 +72,6 @@ jobs:
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-musl
-
-          # ubuntu wasm 
           
           # apple aarch64
           - node: macos-latest
@@ -86,7 +94,7 @@ jobs:
 
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: ${{ matrix.toolchain }}
           override: true
       
       - name: Build Dev
