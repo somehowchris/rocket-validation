@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "packages/validation",
+
+    "examples/json-validation",
+    "examples/query-validation",
+    "examples/form-validation",
+]
