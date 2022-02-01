@@ -2,6 +2,13 @@
 name = "rocket-validation"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+readme = "../../Readme.md"
+repository = "https://github.com/somehowchris/rocket-validation"
+keywords = ["me"]
+categories = ["me"]
+rust-version = "1.58.0"
+description = "me"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -9,5 +16,5 @@ edition = "2021"
 path = "src/lib.rs"
 
 [dependencies]
-rocket = { version = "0.5.0-rc.1", default-features = false }
+rocket = { version = "0.5.0-rc.1", default-features = false, features = ["json"] }
 validator = { version = "0.14.0", features = ["derive"] }

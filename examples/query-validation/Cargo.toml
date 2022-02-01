@@ -2,6 +2,13 @@
 name = "query-validation"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/somehowchris/rocket-validation"
+keywords = ["me"]
+categories = ["me"]
+rust-version = "1.58.0"
+readme = "../.."
+license = "MIT"
+description = "me"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
