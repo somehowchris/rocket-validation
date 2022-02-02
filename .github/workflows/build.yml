@@ -10,6 +10,7 @@ on:
 
 jobs:
   build-native:
+    name: Build and Test on native hardware
     strategy:
       fail-fast: false
       matrix:
@@ -47,6 +48,7 @@ jobs:
         run: cargo build --release  --all-features --workspace
 
   build-cross:
+    name: Build and Test for foreign hardware via cross
     strategy:
       fail-fast: false
       matrix:
@@ -59,8 +61,6 @@ jobs:
           # linux aarch64 incl android
           - node: ubuntu-latest
             arch: aarch64-linux-android
-          - node: ubuntu-latest
-            arch: aarch64-fuchsia
           - node: ubuntu-latest
             arch: aarch64-unknown-linux-gnu
           - node: ubuntu-latest
@@ -75,12 +75,6 @@ jobs:
             arch: x86_64-unknown-linux-musll
           - node: ubuntu-latest
             arch: x86_64-linux-android
-          - node: ubuntu-latest
-            arch: x86_64-fuchsia
-          - node: ubuntu-latest
-            arch: x86_64-unknown-netbsd
-          - node: ubuntu-latest
-            arch: x86_64-unknown-freebsd
 
           - node: ubuntu-latest
             arch: i686-unknown-linux-gnu

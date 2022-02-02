@@ -27,5 +27,7 @@ fn validated_hello(data: Validated<Json<HelloData>>) -> Json<HelloData> {
 
 #[launch]
 fn rocket() -> _ {
-	rocket::build().mount("/", routes![hello, validated_hello])
+	rocket::build()
+		.mount("/", routes![hello, validated_hello])
+		.register("/", catchers![rocket_validation::validation_catcher])
 }

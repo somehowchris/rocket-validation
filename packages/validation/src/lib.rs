@@ -13,8 +13,10 @@ use rocket::{
 	http::Status,
 	outcome::Outcome,
 	request::{FromRequest, Request},
+	serde::{json::Json},
 };
 use std::fmt::Debug;
+use rocket::serde::Serialize;
 
 #[derive(Clone, Debug)]
 pub struct Validated<T>(pub T);
@@ -36,6 +38,33 @@ fn match_outcome<L: Validate>(data: &L) -> Result<(), (Status, ValidationErrors)
 	}
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Error<'a> {
+	code: u128,
+	message: &'a str,
+	errors: &'a ValidationErrors,
+}
+
+#[rocket::catch(400)]
+pub fn validation_catcher<'a>(req: &'a Request) -> Result<Json<Error<'a>>, ()> {
+	match &req.local_cache(|| CachedValidationErrors::<Option<ValidationErrors>>(None)).0 {
+		Some(value) => {
+			Ok(Json(Error{
+				code: 400,
+				message: "Validation of input data failed",
+				errors: value,
+			}))
+		},
+		None => {
+			Err(())
+		}
+	}
+}
+
+#[derive(Clone)]
+pub struct CachedValidationErrors<T>(pub T);
+
 #[rocket::async_trait]
 impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
 	type Error = Result<ValidationErrors, <D as rocket::data::FromData<'r>>::Error>;
@@ -48,7 +77,10 @@ impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
 			Outcome::Forward(err) => Outcome::Forward(err),
 			Outcome::Success(data) => match match_outcome(&data) {
 				Ok(_) => Outcome::Success(Validated(data)),
-				Err((status, err)) => Outcome::Failure((status, Ok(err))),
+				Err((status, err)) => {
+					req.local_cache(|| CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned())));
+					Outcome::Failure((status, Ok(err)))
+				}
 			},
 		}
 	}
@@ -65,7 +97,10 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
 			Outcome::Forward(err) => Outcome::Forward(err),
 			Outcome::Success(data) => match match_outcome(&data) {
 				Ok(_) => Outcome::Success(Validated(data)),
-				Err((status, err)) => Outcome::Failure((status, Ok(err))),
+				Err((status, err)) => {
+					req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
+					Outcome::Failure((status, Ok(err)))
+				}
 			},
 		}
 	}
