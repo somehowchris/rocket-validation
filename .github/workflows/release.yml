@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - uses: chrnorm/deployment-action@releases/v1
+          name: Create GitHub deployment
+          id: deployment
+          with:
+            token: "${{ github.token }}"
+            target_url: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+            environment: crates.io
+
+        - name: Update deployment status (pending)
+          uses: chrnorm/deployment-status@releases/v1
+          with:
+            token: "${{ github.token }}"
+            target_url: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+            state: "pending"
+            deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+            
+        - uses: actions-rs/toolchain@v1
+          with:
+              toolchain: stable
+              override: true
+
+        - uses: katyo/publish-crates@v1
+          with:
+              registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+              path: packages/validation/
+              
+        - name: Update deployment status (success)
+          if: success()
+          uses: chrnorm/deployment-status@releases/v1
+          with:
+            token: "${{ github.token }}"
+            target_url: https://crates.io/crates/cf-env
+            state: "success"
+            deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+
+        - name: Update deployment status (failure)
+          if: failure()
+          uses: chrnorm/deployment-status@releases/v1
+          with:
+            token: "${{ github.token }}"
+            target_url: https://crates.io/crates/cf-env
+            state: "failure"
+            deployment_id: ${{ steps.deployment.outputs.deployment_id }}

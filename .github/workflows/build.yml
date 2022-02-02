@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "main"
-      - "develop"
   pull_request:
     branches:
       - "*"
@@ -18,7 +17,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.58.0 # msrv
+          - 1.56.0 # msrv
         config:
           - node: ubuntu-latest
           - node: windows-latest
@@ -55,7 +54,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.58.0 # msrv
+          - 1.56.0 # msrv
         config:
           # ubuntu aarch64 incl android
           - node: ubuntu-latest
@@ -72,6 +71,10 @@ jobs:
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-musl
+
+          # windows aarch64
+          - node: windows-latest
+            arch: aarch64-pc-windows-msvc
           
           # apple aarch64
           - node: macos-latest
@@ -96,15 +99,12 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
           override: true
+
+      - name: Build Dev
+        run: rustup target add aarch64-pc-windows-msvc
       
       - name: Build Dev
         run: cross build --target ${{ matrix.config.arch }} --all-features --workspace
       
       - name: Build Relese
         run: cross build --target ${{ matrix.config.arch }} --all-features --release --workspace
-      
-      - name: Test Dev
-        run: cross test --target ${{ matrix.config.arch }}  --all-features --workspace
-
-      - name: Test Release
-        run: cross test --target ${{ matrix.config.arch }}  --all-features --release  --workspace
