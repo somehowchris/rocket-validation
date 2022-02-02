@@ -64,7 +64,7 @@ jobs:
           - node: ubuntu-latest
             arch: aarch64-unknown-linux-gnu
           - node: ubuntu-latest
-            arch: aarch64-unknown-linux-mus
+            arch: aarch64-unknown-linux-musl
 
           # linux x86
           - node: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
-            arch: x86_64-unknown-linux-musll
+            arch: x86_64-unknown-linux-musl
           - node: ubuntu-latest
             arch: x86_64-linux-android
 

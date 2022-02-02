@@ -4,7 +4,9 @@
 #[allow(unused_imports)]
 #[macro_use]
 pub extern crate validator;
-pub use validator::{Validate, ValidationErrors};
+
+#[macro_use]
+extern crate rocket;
 
 use rocket::{
 	data::{Data, FromData, Outcome as DataOutcome},
@@ -13,10 +15,10 @@ use rocket::{
 	http::Status,
 	outcome::Outcome,
 	request::{FromRequest, Request},
-	serde::{json::Json},
+	serde::{json::Json, Serialize},
 };
 use std::fmt::Debug;
-use rocket::serde::Serialize;
+pub use validator::{Validate, ValidationErrors};
 
 #[derive(Clone, Debug)]
 pub struct Validated<T>(pub T);
@@ -43,23 +45,20 @@ fn match_outcome<L: Validate>(data: &L) -> Result<(), (Status, ValidationErrors)
 pub struct Error<'a> {
 	code: u128,
 	message: &'a str,
-	errors: &'a ValidationErrors,
+	errors: Option<&'a ValidationErrors>,
 }
 
-#[rocket::catch(400)]
-pub fn validation_catcher<'a>(req: &'a Request) -> Result<Json<Error<'a>>, ()> {
-	match &req.local_cache(|| CachedValidationErrors::<Option<ValidationErrors>>(None)).0 {
-		Some(value) => {
-			Ok(Json(Error{
-				code: 400,
-				message: "Validation of input data failed",
-				errors: value,
-			}))
-		},
-		None => {
-			Err(())
-		}
-	}
+#[catch(400)]
+pub fn validation_catcher<'a>(req: &'a Request) -> Json<Error<'a>> {
+	Json(Error {
+		code: 400,
+		message: "Bad Request. The request could not be understood by the server due to malformed \
+		          syntax.",
+		errors: req
+			.local_cache(|| CachedValidationErrors::<Option<ValidationErrors>>(None))
+			.0
+			.as_ref(),
+	})
 }
 
 #[derive(Clone)]
@@ -78,7 +77,9 @@ impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
 			Outcome::Success(data) => match match_outcome(&data) {
 				Ok(_) => Outcome::Success(Validated(data)),
 				Err((status, err)) => {
-					req.local_cache(|| CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned())));
+					req.local_cache(|| {
+						CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned()))
+					});
 					Outcome::Failure((status, Ok(err)))
 				}
 			},
@@ -98,8 +99,10 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
 			Outcome::Success(data) => match match_outcome(&data) {
 				Ok(_) => Outcome::Success(Validated(data)),
 				Err((status, err)) => {
-					req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
-					Outcome::Failure((status, Ok(err)))
+					req.local_cache(|| {
+						CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned()))
+					});
+					return Outcome::Failure((status, Ok(err)));
 				}
 			},
 		}
@@ -123,9 +126,7 @@ impl<'r, T: Validate + FromForm<'r>> FromForm<'r> for Validated<T> {
 	}
 
 	fn finalize(this: Self::Context) -> form::Result<'r, Self> {
-		let final_data = T::finalize(this);
-
-		match final_data {
+		match T::finalize(this) {
 			Err(err) => Err(err),
 			Ok(data) => match match_outcome(&data) {
 				Ok(_) => Ok(Validated(data)),
@@ -134,7 +135,7 @@ impl<'r, T: Validate + FromForm<'r>> FromForm<'r> for Validated<T> {
 					.into_errors()
 					.into_iter()
 					.map(|e| form::Error {
-						name: Some(e.0.to_owned().into()),
+						name: Some(e.0.into()),
 						kind: form::error::ErrorKind::Validation(std::borrow::Cow::Borrowed(e.0)),
 						value: None,
 						entity: form::error::Entity::Value,
