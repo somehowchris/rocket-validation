@@ -13,7 +13,6 @@ use rocket::{
 	http::Status,
 	outcome::Outcome,
 	request::{FromRequest, Request},
-	serde::{json::Json, Deserialize},
 };
 use std::fmt::Debug;
 
@@ -38,17 +37,16 @@ fn match_outcome<L: Validate>(data: &L) -> Result<(), (Status, ValidationErrors)
 }
 
 #[rocket::async_trait]
-impl<'r, D: Validate + Deserialize<'r>> FromData<'r> for Validated<Json<D>> {
-	type Error = Result<ValidationErrors, <Json<D> as rocket::data::FromData<'r>>::Error>;
+impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
+	type Error = Result<ValidationErrors, <D as rocket::data::FromData<'r>>::Error>;
 
 	async fn from_data(req: &'r Request<'_>, data: Data<'r>) -> DataOutcome<'r, Self> {
-		let data_outcome: Outcome<Json<D>, (Status, <Json<D> as FromData>::Error), Data> =
-			<Json<D> as FromData<'r>>::from_data(req, data).await;
+		let data_outcome = <D as FromData<'r>>::from_data(req, data).await;
 
 		match data_outcome {
 			Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
 			Outcome::Forward(err) => Outcome::Forward(err),
-			Outcome::Success(data) => match match_outcome(&data.0) {
+			Outcome::Success(data) => match match_outcome(&data) {
 				Ok(_) => Outcome::Success(Validated(data)),
 				Err((status, err)) => Outcome::Failure((status, Ok(err))),
 			},
@@ -91,7 +89,7 @@ impl<'r, T: Validate + FromForm<'r>> FromForm<'r> for Validated<T> {
 
 	fn finalize(this: Self::Context) -> form::Result<'r, Self> {
 		let final_data = T::finalize(this);
-		
+
 		match final_data {
 			Err(err) => Err(err),
 			Ok(data) => match match_outcome(&data) {
