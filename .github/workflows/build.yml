@@ -56,29 +56,54 @@ jobs:
           - nightly
           - 1.56.0 # msrv
         config:
-          # ubuntu aarch64 incl android
+          # linux aarch64 incl android
           - node: ubuntu-latest
             arch: aarch64-linux-android
           - node: ubuntu-latest
+            arch: aarch64-fuchsia
+          - node: ubuntu-latest
             arch: aarch64-unknown-linux-gnu
           - node: ubuntu-latest
-            arch: aarch64-unknown-linux-musl
+            arch: aarch64-unknown-linux-mus
 
-          # ubuntu x86
+          # linux x86
           - node: ubuntu-latest
             arch: x86_64-linux-android
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
-            arch: x86_64-unknown-linux-musl
+            arch: x86_64-unknown-linux-musll
+          - node: ubuntu-latest
+            arch: x86_64-linux-android
+          - node: ubuntu-latest
+            arch: x86_64-fuchsia
+          - node: ubuntu-latest
+            arch: x86_64-unknown-netbsd
+          - node: ubuntu-latest
+            arch: x86_64-unknown-freebsd
+
+          - node: ubuntu-latest
+            arch: i686-unknown-linux-gnu
 
           # windows aarch64
           - node: windows-latest
             arch: aarch64-pc-windows-msvc
+          - node: windows-latest
+            arch: i686-pc-windows-gnu
+          - node: windows-latest
+            arch: i686-pc-windows-msvc
+          - node: windows-latest
+            arch: x86_64-pc-windows-gnu
+          - node: windows-latest
+            arch: x86_64-pc-windows-msvc
           
           # apple aarch64
           - node: macos-latest
             arch: aarch64-apple-ios
+          - node: macos-latest
+            arch: aarch64-apple-ios-sim
+          - node: macos-latest
+            arch: x86_64-apple-ios
           - node: macos-latest
             arch: aarch64-apple-darwin
 
@@ -101,7 +126,7 @@ jobs:
           override: true
 
       - name: Build Dev
-        run: rustup target add aarch64-pc-windows-msvc
+        run: rustup target add ${{ matrix.config.arch }}
       
       - name: Build Dev
         run: cross build --target ${{ matrix.config.arch }} --all-features --workspace

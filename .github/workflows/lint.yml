@@ -10,7 +10,8 @@ on:
     branches: ["*"]
 
 jobs:
-  check:
+  style:
+    name: Styling with fmt, check and clippy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -31,8 +32,16 @@ jobs:
       - name: Run check
         run: cargo check
 
-      - name: Run tests
-        run: cargo test
+  tests:
+    name: Test and CodeCov
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
@@ -50,6 +59,17 @@ jobs:
         with:
           name: code-coverage-report
           path: cobertura.xml
+
+  release-dry-run:
+    name: Release dry run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
       - uses: katyo/publish-crates@v1
         with:

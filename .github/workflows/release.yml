@@ -7,6 +7,7 @@ on:
 
 jobs:
   release:
+    name: Releasing Crate on crates.io
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v2

@@ -5,7 +5,7 @@ edition = "2021"
 repository = "https://github.com/somehowchris/rocket-validation"
 keywords = ["me"]
 categories = ["me"]
-rust-version = "1.58.0"
+rust-version = "1.56.0"
 readme = "../.."
 license = "MIT"
 description = "me"
@@ -15,4 +15,4 @@ description = "me"
 [dependencies]
 rocket = { version = "0.5.0-rc.1", features=["json"] }
 rocket-validation = { path = "../../packages/validation" }
-validator = { git="https://github.com/somehowchris/validator.git", features = ["derive", "rocket"] }
+validator = { git="https://github.com/somehowchris/validator.git", version="0.14.0", features = ["derive", "rocket"] }
