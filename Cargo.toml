@@ -5,10 +5,10 @@ edition = "2021"
 license = "MIT"
 readme = "../../Readme.md"
 repository = "https://github.com/somehowchris/rocket-validation"
-keywords = ["me"]
-categories = ["me"]
+keywords = ["rocket", "validation", "json", "query", "data", "validator"]
+categories = ["web-programming"]
 rust-version = "1.56.0"
-description = "me"
+description = "Rocket Guards to support validation using validator"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

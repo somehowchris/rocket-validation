@@ -25,22 +25,19 @@
 //!
 //! Now you can go on and implement your Validation
 //! ```rust
-//! // Because we use rocket....
-//! #[macro_use]
-//! extern crate rocket;
-//!
-//! // Some types for Json types
+//! # #[macro_use] extern crate rocket;
+//! ///  Some types for Json types
 //! use rocket::serde::{json::Json, Deserialize, Serialize};
 //!
-//! // Will be important for validation....
+//! ///  Will be important for validation....
 //! use rocket_validation::{Validate, Validated};
 //!
-//! #[derive(Debug, Deserialize, Serialize, Validate)] // Implements `Validate`
+//! #[derive(Debug, Deserialize, Serialize, Validate)] ///  Implements `Validate`
 //! #[serde(crate = "rocket::serde")]
 //! pub struct HelloData {
-//!     #[validate(length(min = 1))] // Your validation annotation
+//!     #[validate(length(min = 1))] ///  Your validation annotation
 //!     name: String,
-//!     #[validate(range(min = 0, max = 100))] // Your validation annotation
+//!     #[validate(range(min = 0, max = 100))] ///  Your validation annotation
 //!     age: u8,
 //! }
 //!
@@ -53,7 +50,7 @@
 //!
 //! #[launch]
 //! fn rocket() -> _ {
-//!     rocket::build().mount("/", routes![hello, validated_hello])
+//!     rocket::build().mount("/", routes![validated_hello])
 //! }
 //! ```
 //! ### Exposing errors to clients
@@ -62,10 +59,11 @@
 //!
 //! If you would like to respond invalid requests with some custom messages, you can implement the `validation_catcher` catcher to do so.
 //! ```rust
+//! # #[macro_use] extern crate rocket;
 //! #[launch]
 //! fn rocket() -> _ {
 //!     rocket::build()
-//!         .mount("/", routes![hello, validated_hello])
+//!         .mount("/", routes![/*validated_hello*/])
 //!         .register("/", catchers![rocket_validation::validation_catcher])
 //! }
 //! ```
@@ -91,11 +89,11 @@ use rocket::{
 use std::fmt::Debug;
 pub use validator::{Validate, ValidationErrors};
 
-/// Struct used for Request Guards
+////  Struct used for Request Guards
 #[derive(Clone, Debug)]
 pub struct Validated<T>(pub T);
 
-// Impl to get type T of `Json`
+///  Impl to get type T of `Json`
 impl<T> Validated<Json<T>> {
     #[inline]
     pub fn into_deep_inner(self) -> T {
@@ -103,7 +101,7 @@ impl<T> Validated<Json<T>> {
     }
 }
 
-// Impl to get type T
+///  Impl to get type T
 impl<T> Validated<T> {
     #[inline]
     pub fn into_inner(self) -> T {
@@ -111,7 +109,7 @@ impl<T> Validated<T> {
     }
 }
 
-// Struct representing errors sent by the catcher
+///  Struct representing errors sent by the catcher
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Error<'a> {
@@ -120,7 +118,16 @@ pub struct Error<'a> {
     errors: Option<&'a ValidationErrors>,
 }
 
-// Catcher to return validation errors to the client
+///  Catcher to return validation errors to the client
+///  ```rust
+///  # #[macro_use] extern crate rocket;
+///  #[launch]
+///  fn rocket() -> _ {
+///      rocket::build()
+///          .mount("/", routes![/*validated_hello*/])
+///  /* right here ---->*/.register("/", catchers![rocket_validation::validation_catcher])
+///  }
+///  ```
 #[catch(400)]
 pub fn validation_catcher<'a>(req: &'a Request) -> Json<Error<'a>> {
     Json(Error {
@@ -131,11 +138,39 @@ pub fn validation_catcher<'a>(req: &'a Request) -> Json<Error<'a>> {
     })
 }
 
-// Wrapper used to store `ValidationErrors` within the scope of the request
+///  Wrapper used to store `ValidationErrors` within the scope of the request
 #[derive(Clone)]
 pub struct CachedValidationErrors(pub Option<ValidationErrors>);
 
-// Implementation of `Validated` for `FromData`
+///  Implementation of `Validated` for `FromData`
+//
+///  An example with `Json`
+///  ```rust
+///  # #[macro_use] extern crate rocket;
+///  use rocket::serde::{json::Json, Deserialize, Serialize};
+///  use rocket_validation::{Validate, Validated};
+///  
+///  #[derive(Debug, Deserialize, Serialize, Validate)]
+///  #[serde(crate = "rocket::serde")]
+///  pub struct HelloData {
+///      #[validate(length(min = 1))]
+///      name: String,
+///      #[validate(range(min = 0, max = 100))]
+///      age: u8,
+///  }
+//
+///  #[post("/hello", format = "application/json", data = "<data>")]
+///  fn validated_hello(data: Validated<Json<HelloData>>) -> Json<HelloData> {
+///      Json(data.into_deep_inner())
+///  }
+///  
+///  #[launch]
+///  fn rocket() -> _ {
+///      rocket::build()
+///          .mount("/", routes![validated_hello])
+///          .register("/", catchers![rocket_validation::validation_catcher])
+///  }
+///  ```
 #[rocket::async_trait]
 impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
     type Error = Result<ValidationErrors, <D as rocket::data::FromData<'r>>::Error>;
@@ -157,7 +192,9 @@ impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
     }
 }
 
-// Implementation of `Validated` for `FromRequest`
+///  Implementation of `Validated` for `FromRequest`
+//
+///  Anything you implement `FromRequest` for as well as `Validate`
 #[rocket::async_trait]
 impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
     type Error = Result<ValidationErrors, D::Error>;
@@ -178,7 +215,34 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
     }
 }
 
-// Implementation of `Validated` for `FromForm`
+///  Implementation of `Validated` for `FromForm`
+///  An example with `Json`
+///  ```rust
+///  # #[macro_use] extern crate rocket;
+///  use rocket::serde::{json::Json, Deserialize, Serialize};
+///  use rocket_validation::{Validate, Validated};
+///  
+///  #[derive(Debug, Deserialize, Serialize, Validate, FromForm)]
+///  #[serde(crate = "rocket::serde")]
+///  pub struct HelloData {
+///      #[validate(length(min = 1))]
+///      name: String,
+///      #[validate(range(min = 0, max = 100))]
+///      age: u8,
+///  }
+//
+///  #[get("/validated-hello?<params..>", format = "application/json")]
+///  fn validated_hello(params: Validated<HelloData>) -> Json<HelloData> {
+///      Json(params.into_inner())
+///  }
+///  
+///  #[launch]
+///  fn rocket() -> _ {
+///      rocket::build()
+///          .mount("/", routes![validated_hello])
+///          .register("/", catchers![rocket_validation::validation_catcher])
+///  }
+///  ```
 #[rocket::async_trait]
 impl<'r, T: Validate + FromForm<'r>> FromForm<'r> for Validated<T> {
     type Context = T::Context;

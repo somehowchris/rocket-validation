@@ -80,12 +80,6 @@ jobs:
           - node: windows-latest
             arch: aarch64-pc-windows-msvc
           - node: windows-latest
-            arch: i686-pc-windows-gnu
-          - node: windows-latest
-            arch: i686-pc-windows-msvc
-          - node: windows-latest
-            arch: x86_64-pc-windows-gnu
-          - node: windows-latest
             arch: x86_64-pc-windows-msvc
           
           # apple aarch64

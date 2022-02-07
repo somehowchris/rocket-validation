@@ -69,7 +69,7 @@ fn rocket() -> _ {
 ```
 
 ## TODO
-- [ ] Write Docs
+- [x] Write Docs
 - [x] Write Readme
 - [ ] Write Tests
 - [x] Do CI
