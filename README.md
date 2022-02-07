@@ -74,6 +74,6 @@ fn rocket() -> _ {
 - [ ] Write Docs
 - [x] Write Readme
 - [ ] Write Tests
-- [ ] Do CI
+- [x] Do CI
 
 

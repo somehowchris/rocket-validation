@@ -1,20 +1,20 @@
 //! # Rocket Validation
-//! 
+//!
 //! Welcome to the Rocket Validation crate. If you are looking to validate your Json, Form or Query Structs using Rocket you have come to the right place!
 //!
 //! ## Why
 //! Rocket is using Rusts powerful typing system. Which is amazing because you can be sure its what you want. But is it? How about kebab-case strings or phone number inputs, these aren’t really types.
 //! You could implement a [custom deserializer](https://docs.serde.rs/serde/de/trait.Deserializer.html) for a wrapped type or write custom logic to validate it on endpoint calls, thats error prone and not ergonimic and doesn't allow you to return meaningfull and contextual errors.
-//! 
+//!
 //! If you are coming from TypeScript you might have heard of [class-validator](https://github.com/typestack/class-validator) which is simple, declerative and can be implemented into middlewares. Using [validator](https://github.com/Keats/validator) this crate achives a simmilar result using rockets [guard](https://rocket.rs/v0.5-rc/guide/requests/#request-guards) mechanism.
 //! > Anything implementing [FromData](https://api.rocket.rs/v0.5-rc/rocket/data/trait.FromData.html), [FromRequest](https://api.rocket.rs/v0.5-rc/rocket/request/trait.FromRequest.html) or [FromForm](https://api.rocket.rs/v0.5-rc/rocket/form/trait.FromForm.html) as well as [`Validate`](https://docs.rs/validator/latest/validator/#example) are able to use the `Validated` guard of this crate, so you can be sure your data is validated once you receive it in your handler. (Including rockets [`Json`](https://rocket.rs/v0.5-rc/guide/requests/#json) type)
 //!
 //! > Using rockets [catchers](https://rocket.rs/v0.5-rc/guide/requests/#error-catchers) you are able to route errors which occure during validation to your user.
 //!
 //! Current validation in rocket: Rocket has validation for FromForm structs but for nothing else.
-//! 
+//!
 //! ## Usage
-//! 
+//!
 //! In order to get going, you need to depend on the `rocket_validation`.
 //!
 //! Add this to your `Cargo.toml`
@@ -22,51 +22,51 @@
 //! [dependencies]
 //! rocket_validation = "0.1.0"
 //! ```
-//!	
+//!
 //! Now you can go on and implement your Validation
 //! ```rust
 //! // Because we use rocket....
 //! #[macro_use]
 //! extern crate rocket;
-//! 
+//!
 //! // Some types for Json types
 //! use rocket::serde::{json::Json, Deserialize, Serialize};
-//! 
+//!
 //! // Will be important for validation....
 //! use rocket_validation::{Validate, Validated};
 //!
 //! #[derive(Debug, Deserialize, Serialize, Validate)] // Implements `Validate`
 //! #[serde(crate = "rocket::serde")]
 //! pub struct HelloData {
-//! 	#[validate(length(min = 1))] // Your validation ennotation
-//! 	name: String,
-//! 	#[validate(range(min = 0, max = 100))] // Your validation ennotation
-//! 	age: u8,
+//!     #[validate(length(min = 1))] // Your validation ennotation
+//!     name: String,
+//!     #[validate(range(min = 0, max = 100))] // Your validation ennotation
+//!     age: u8,
 //! }
 //!
-//!
 //! #[post("/hello", format = "application/json", data = "<data>")]
-//! fn validated_hello(data: /*Uses the `Validated` type*/ Validated<Json<HelloData>>) -> Json<HelloData> {
-//! 	Json(data.0 .0)
+//! fn validated_hello(
+//!     data: /* Uses the `Validated` type */ Validated<Json<HelloData>>,
+//! ) -> Json<HelloData> {
+//!     Json(data.0 .0)
 //! }
 //!
 //! #[launch]
 //! fn rocket() -> _ {
-//! 	rocket::build()
-//! 		.mount("/", routes![hello, validated_hello])
+//!     rocket::build().mount("/", routes![hello, validated_hello])
 //! }
 //! ```
 //! ### Exposing erors to clients
-//! 
+//!
 //! > Before you use the following, you should be aware of what errors you expose to your clients as well as what that means for security.
-//! 
+//!
 //! If you would like to respond invalid requests with some custom messages, you can implement the `validation_catcher` catcher to do so.
 //! ```rust
 //! #[launch]
 //! fn rocket() -> _ {
-//! 	rocket::build()
-//! 		.mount("/", routes![hello, validated_hello])
-//! 		.register("/", catchers![rocket_validation::validation_catcher])
+//!     rocket::build()
+//!         .mount("/", routes![hello, validated_hello])
+//!         .register("/", catchers![rocket_validation::validation_catcher])
 //! }
 //! ```
 
