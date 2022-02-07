@@ -14,11 +14,11 @@ Current validation in rocket: Rocket has validation for FromForm structs but for
 
 ## Usage
 
-In order to get going, you need to depend on the `rocket_validation`.
+In order to get going, you need to depend on the `rocket-validation`.
 Add this to your `Cargo.toml`
 ```toml
 [dependencies]
-rocket_validation = "0.1.0"
+rocket-validation = "0.1.0"
 ```
 
 Now you can go on and implement your Validation

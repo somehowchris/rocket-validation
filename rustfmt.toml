@@ -7,4 +7,3 @@ format_generated_files=true
 format_macro_matchers=true
 format_macro_bodies=true
 format_strings=true
-hard_tabs=true
