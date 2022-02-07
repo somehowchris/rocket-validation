@@ -3,14 +3,11 @@
 #[macro_use]
 extern crate rocket;
 
-#[macro_use]
-extern crate rocket_validation;
-
 use rocket::{
 	form::Form,
 	serde::{json::Json, Deserialize, Serialize},
 };
-use rocket_validation::Validated;
+use rocket_validation::{Validate, Validated};
 
 #[derive(Copy, Clone, Debug, Deserialize, Serialize, Validate, FromForm)]
 #[serde(crate = "rocket::serde")]

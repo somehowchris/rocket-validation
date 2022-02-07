@@ -4,7 +4,7 @@
 extern crate rocket;
 
 use rocket::serde::{json::Json, Deserialize, Serialize};
-use rocket_validation::{validator::Validate, Validated};
+use rocket_validation::{Validate, Validated};
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 #[serde(crate = "rocket::serde")]

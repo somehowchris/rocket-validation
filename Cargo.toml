@@ -1,9 +1,32 @@
-[workspace]
+[package]
+name = "rocket-validation"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+readme = "../../Readme.md"
+repository = "https://github.com/somehowchris/rocket-validation"
+keywords = ["me"]
+categories = ["me"]
+rust-version = "1.56.0"
+description = "me"
 
-members = [
-    "packages/validation",
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-    "examples/json-validation",
-    "examples/query-validation",
-    "examples/form-validation",
-]
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rocket = { version = "0.5.0-rc.1", default-features = false, features = ["json"] }
+validator = { git="https://github.com/somehowchris/validator.git", version="0.14.0", features = ["derive", "rocket"] }
+
+[[example]]
+name = "json-validation"
+path = "examples/json-validation/src/main.rs"
+
+[[example]]
+name = "query-validation"
+path = "examples/query-validation/src/main.rs"
+
+[[example]]
+name = "form-validation"
+path = "examples/form-validation/src/main.rs"

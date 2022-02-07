@@ -15,4 +15,3 @@ description = "me"
 [dependencies]
 rocket = { version = "0.5.0-rc.1", features=["json"] }
 rocket-validation = { path = "../../packages/validation" }
-validator = { git="https://github.com/somehowchris/validator.git", version="0.14.0", features = ["derive"] }
