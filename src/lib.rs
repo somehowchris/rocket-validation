@@ -69,7 +69,6 @@
 //!         .register("/", catchers![rocket_validation::validation_catcher])
 //! }
 //! ```
-
 #![deny(clippy::all, clippy::cargo)]
 #![forbid(unsafe_code)]
 
@@ -92,8 +91,16 @@ use rocket::{
 use std::fmt::Debug;
 pub use validator::{Validate, ValidationErrors};
 
+/// Struct used for Request Guards
 #[derive(Clone, Debug)]
 pub struct Validated<T>(pub T);
+
+impl<T> Validated<Json<T>> {
+	#[inline]
+	pub fn into_deep_inner(self) -> T {
+		self.0.0
+	}
+}
 
 impl<T> Validated<T> {
 	#[inline]
@@ -102,6 +109,7 @@ impl<T> Validated<T> {
 	}
 }
 
+// Basic (repeated) logic of validating a struct and returning 
 #[inline]
 fn match_outcome<L: Validate>(data: &L) -> Result<(), (Status, ValidationErrors)> {
 	let validation_outcome = data.validate();
@@ -146,13 +154,13 @@ impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
 		match data_outcome {
 			Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
 			Outcome::Forward(err) => Outcome::Forward(err),
-			Outcome::Success(data) => match match_outcome(&data) {
+			Outcome::Success(data) => match data.validate() {
 				Ok(_) => Outcome::Success(Validated(data)),
-				Err((status, err)) => {
+				Err(err) => {
 					req.local_cache(|| {
 						CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned()))
 					});
-					Outcome::Failure((status, Ok(err)))
+					Outcome::Failure((Status::BadRequest, Ok(err)))
 				}
 			},
 		}
@@ -168,13 +176,13 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
 		match data_outcome {
 			Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
 			Outcome::Forward(err) => Outcome::Forward(err),
-			Outcome::Success(data) => match match_outcome(&data) {
+			Outcome::Success(data) =>  match data.validate() {
 				Ok(_) => Outcome::Success(Validated(data)),
-				Err((status, err)) => {
+				Err(err) => {
 					req.local_cache(|| {
 						CachedValidationErrors::<Option<ValidationErrors>>(Some(err.to_owned()))
 					});
-					return Outcome::Failure((status, Ok(err)));
+					Outcome::Failure((Status::BadRequest, Ok(err)))
 				}
 			},
 		}

@@ -68,8 +68,6 @@ fn rocket() -> _ {
 }
 ```
 
-## Usage
-
 ## TODO
 - [ ] Write Docs
 - [x] Write Readme

@@ -22,7 +22,7 @@ fn hello(name: String, age: u8) -> Json<HelloData> {
 
 #[post("/hello", format = "application/json", data = "<data>")]
 fn validated_hello(data: Validated<Json<HelloData>>) -> Json<HelloData> {
-	Json(data.0 .0)
+	Json(data.into_deep_inner())
 }
 
 #[launch]

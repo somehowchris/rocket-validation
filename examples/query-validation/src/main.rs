@@ -22,7 +22,7 @@ fn hello(name: String, age: u8) -> Json<HelloData> {
 
 #[get("/validated-hello?<params..>", format = "application/json")]
 fn validated_hello(params: Validated<HelloData>) -> Json<HelloData> {
-	Json(params.0)
+	Json(params.into_inner())
 }
 
 #[launch]

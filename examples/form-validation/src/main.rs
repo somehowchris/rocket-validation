@@ -25,7 +25,7 @@ fn hello(name: &'_ str, age: u8) -> Json<HelloData> {
 
 #[post("/hello", data = "<data>")]
 fn validated_hello(data: Form<Validated<HelloData>>) -> Json<HelloData> {
-	Json(data.0)
+	Json(data.into_inner())
 }
 
 #[launch]
