@@ -44,7 +44,7 @@ pub struct HelloData {
 
 #[post("/hello", format = "application/json", data = "<data>")]
 fn validated_hello(data: /*Uses the `Validated` type*/ Validated<Json<HelloData>>) -> Json<HelloData> {
-	Json(data.0 .0)
+	Json(data.into_inner())
 }
 
 #[launch]
@@ -69,7 +69,7 @@ fn rocket() -> _ {
 ```
 
 ## TODO
-- [x] Write Docs
+- [ ] Write Docs
 - [x] Write Readme
 - [ ] Write Tests
 - [x] Do CI

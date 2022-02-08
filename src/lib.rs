@@ -192,6 +192,27 @@ impl<'r, D: Validate + FromData<'r>> FromData<'r> for Validated<D> {
     }
 }
 
+#[rocket::async_trait]
+impl<'r, D: Validate + rocket::serde::Deserialize<'r>> FromData<'r> for Validated<Json<D>> {
+    type Error = Result<ValidationErrors, rocket::serde::json::Error<'r>>;
+
+    async fn from_data(req: &'r Request<'_>, data: Data<'r>) -> DataOutcome<'r, Self> {
+        let data_outcome = <Json<D> as FromData<'r>>::from_data(req, data).await;
+
+        match data_outcome {
+            Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
+            Outcome::Forward(err) => Outcome::Forward(err),
+            Outcome::Success(data) => match data.validate() {
+                Ok(_) => Outcome::Success(Validated(data)),
+                Err(err) => {
+                    req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
+                    Outcome::Failure((Status::BadRequest, Ok(err)))
+                }
+            },
+        }
+    }
+}
+
 ///  Implementation of `Validated` for `FromRequest`
 //
 ///  Anything you implement `FromRequest` for as well as `Validate`
@@ -215,6 +236,7 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
     }
 }
 
+// TODO Fix doc
 ///  Implementation of `Validated` for `FromForm`
 ///  An example with `Json`
 ///  ```rust
