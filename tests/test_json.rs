@@ -1,8 +1,10 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::local::blocking::LocalResponse;
-use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::{
+    local::blocking::LocalResponse,
+    serde::{json::Json, Deserialize, Serialize},
+};
 use rocket_validation::{Validate, Validated};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Validate, FromForm)]
@@ -29,9 +31,10 @@ fn rocket() -> _ {
     rocket::build().mount("/", routes![hello, validated_hello])
 }
 
-use rocket::http::ContentType;
-use rocket::http::Status;
-use rocket::local::blocking::Client;
+use rocket::{
+    http::{ContentType, Status},
+    local::blocking::Client,
+};
 
 #[test]
 pub fn valid_get() {

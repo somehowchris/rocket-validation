@@ -32,12 +32,15 @@
 //! ///  Will be important for validation....
 //! use rocket_validation::{Validate, Validated};
 //!
-//! #[derive(Debug, Deserialize, Serialize, Validate)] ///  Implements `Validate`
+//! #[derive(Debug, Deserialize, Serialize, Validate)]
+//! ///  Implements `Validate`
 //! #[serde(crate = "rocket::serde")]
 //! pub struct HelloData {
-//!     #[validate(length(min = 1))] ///  Your validation annotation
+//!     #[validate(length(min = 1))]
+//!     ///  Your validation annotation
 //!     name: String,
-//!     #[validate(range(min = 0, max = 100))] ///  Your validation annotation
+//!     #[validate(range(min = 0, max = 100))]
+//!     ///  Your validation annotation
 //!     age: u8,
 //! }
 //!

@@ -1,11 +1,12 @@
-
 #[macro_use]
 extern crate rocket;
 
-use rocket::local::blocking::LocalResponse;
-use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::{
+    form::Form,
+    local::blocking::LocalResponse,
+    serde::{json::Json, Deserialize, Serialize},
+};
 use rocket_validation::{Validate, Validated};
-use rocket::form::Form;
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Validate, FromForm)]
 #[serde(crate = "rocket::serde")]
@@ -31,10 +32,10 @@ fn rocket() -> _ {
     rocket::build().mount("/", routes![hello, validated_hello])
 }
 
-use rocket::http::ContentType;
-use rocket::http::Status;
-use rocket::local::blocking::Client;
-use rocket::http::Header;
+use rocket::{
+    http::{ContentType, Header, Status},
+    local::blocking::Client,
+};
 
 #[test]
 pub fn valid_post() {
@@ -42,7 +43,10 @@ pub fn valid_post() {
 
     let header = Header::new("content-type", "application/x-www-form-urlencoded");
 
-    let req = client.post("/hello").header(header).body("name=Chris&age=18");
+    let req = client
+        .post("/hello")
+        .header(header)
+        .body("name=Chris&age=18");
 
     let response: LocalResponse = req.dispatch();
 
@@ -50,7 +54,6 @@ pub fn valid_post() {
     assert_eq!(response.status(), Status::Ok);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 }
-
 
 #[test]
 pub fn invalid_short_name() {
@@ -71,7 +74,10 @@ pub fn invalid_min_age() {
     let client = Client::tracked(rocket()).unwrap();
     let header = Header::new("content-type", "application/x-www-form-urlencoded");
 
-    let req = client.post("/hello").header(header).body("name=Chris&age=0");
+    let req = client
+        .post("/hello")
+        .header(header)
+        .body("name=Chris&age=0");
 
     let response: LocalResponse = req.dispatch();
 
@@ -84,7 +90,10 @@ pub fn invalid_max_age() {
     let client = Client::tracked(rocket()).unwrap();
     let header = Header::new("content-type", "application/x-www-form-urlencoded");
 
-    let req = client.post("/hello").header(header).body("name=Chris&age=102");
+    let req = client
+        .post("/hello")
+        .header(header)
+        .body("name=Chris&age=102");
 
     let response: LocalResponse = req.dispatch();
 
