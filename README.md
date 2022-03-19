@@ -67,3 +67,4 @@ fn rocket() -> _ {
 		.register("/", catchers![rocket_validation::validation_catcher])
 }
 ```
+> Currently limited to `Json` or `FromData` validations due to inernal rocket limitations

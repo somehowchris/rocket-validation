@@ -195,7 +195,7 @@ impl<'r, D: Validate + rocket::serde::Deserialize<'r>> FromData<'r> for Validate
     }
 }
 
-///  Implementation of `Validated` for `FromRequest`
+///  Implementation of `Validated` for `FromRequest` implementing `Validate`
 //
 ///  Anything you implement `FromRequest` for as well as `Validate`
 #[rocket::async_trait]
@@ -218,9 +218,9 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
     }
 }
 
-// TODO Fix doc
 ///  Implementation of `Validated` for `FromForm`
-///  An example with `Json`
+///
+///  An example validating a query struct
 ///  ```rust
 ///  # #[macro_use] extern crate rocket;
 ///  use rocket::serde::{json::Json, Deserialize, Serialize};
