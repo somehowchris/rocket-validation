@@ -7,8 +7,8 @@
 //! You could implement a [custom deserializer](https://docs.serde.rs/serde/de/trait.Deserializer.html) for a wrapped type or write custom logic to validate it on endpoint calls, thats error prone and not ergonomic and doesn't allow you to return meaningful and contextual errors.
 //!
 //! If you are coming from TypeScript you might have heard of [class-validator](https://github.com/typestack/class-validator) which is simple, declarative and can be implemented into middleware. Using [validator](https://github.com/Keats/validator) this crate achieves a similar result using rockets [guard](https://rocket.rs/v0.5-rc/guide/requests/#request-guards) mechanism.
-//! > Anything implementing [Json](https://rocket.rs/v0.5-rc/guide/requests/#json), [FromRequest](https://rocket.rs/v0.5-rc/guide/requests/#custom-guards) or [FromForm](https://rocket.rs/v0.5-rc/guide/requests/#forms) as well as [`Validate`](https://docs.rs/validator/latest/validator/#example) are able to use the `Validated` guard of this crate, so you can be sure your data is validated once you receive it in your handler. 
-//! 
+//! > Anything implementing [Json](https://rocket.rs/v0.5-rc/guide/requests/#json), [FromRequest](https://rocket.rs/v0.5-rc/guide/requests/#custom-guards) or [FromForm](https://rocket.rs/v0.5-rc/guide/requests/#forms) as well as [`Validate`](https://docs.rs/validator/latest/validator/#example) are able to use the `Validated` guard of this crate, so you can be sure your data is validated once you receive it in your handler.
+//!
 //! > Using rockets [catchers](https://rocket.rs/v0.5-rc/guide/requests/#error-catchers) you are able to route errors which occurs during validation to your user.
 //!
 //! Current validation in rocket: Rocket has validation for FromForm structs but for nothing else.
