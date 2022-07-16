@@ -18,7 +18,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0 # msrv
+          - 1.57.0 # msrv
         config:
           - node: ubuntu-latest
           - node: windows-latest
@@ -56,7 +56,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0 # msrv
+          - 1.57.0 # msrv
         config:
           # linux aarch64 incl android
           - node: ubuntu-latest
