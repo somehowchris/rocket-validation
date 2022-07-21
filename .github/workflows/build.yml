@@ -18,7 +18,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0 # msrv
+          - 1.57.0 # msrv
         config:
           - node: ubuntu-latest
           - node: windows-latest
@@ -33,7 +33,7 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
-      - uses: Swatinem/rust-cache@v1.4.0
+      - uses: Swatinem/rust-cache@v2.0.0
 
       - name: Build Dev
         run: cargo build --all-features --workspace  --examples
@@ -56,7 +56,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0 # msrv
+          - 1.57.0 # msrv
         config:
           # linux aarch64 incl android
           - node: ubuntu-latest
