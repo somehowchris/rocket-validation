@@ -18,8 +18,10 @@ In order to get going, you need to depend on the `rocket-validation`.
 Add this to your `Cargo.toml`
 ```toml
 [dependencies]
-rocket-validation = "0.1.0"
+rocket-validation = "0.1.2"
+validator="?"
 ```
+> `validator` is needed as the derive macros of the crate `validator` generate code dependent on it being available in a global scope
 
 Now you can go on and implement your Validation
 ```rust
