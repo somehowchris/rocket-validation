@@ -24,7 +24,7 @@
 //! validator="?"
 //! ```
 //! > `validator` is needed as the derive macros of the crate `validator` generate code dependent on it being available in a global scope
-//! 
+//!
 //! Now you can go on and implement your Validation
 //! ```rust
 //! # #[macro_use] extern crate rocket;
