@@ -1,6 +1,6 @@
 [package]
 name = "rocket-validation"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 license = "MIT"
 readme = "README.md"
@@ -16,8 +16,10 @@ description = "Rocket Guards to support validation using validator"
 path = "src/lib.rs"
 
 [dependencies]
-rocket = { version = "0.5.0-rc.2", default-features = false, features = ["json"] }
-validator = { version="0.16.0", features = ["derive"] }
+rocket = { version = "0.5.0-rc.2", default-features = false, features = [
+    "json",
+] }
+validator = { version = "0.16.0", features = ["derive"] }
 
 [[example]]
 name = "json-validation"
