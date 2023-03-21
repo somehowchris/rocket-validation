@@ -1,4 +1,4 @@
-name: Build
+name: test
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - "*"
 
 jobs:
-  build-native:
+  test-native:
     name: Build and Test on native hardware
     strategy:
       fail-fast: false
@@ -35,19 +35,13 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2.0.0
 
-      - name: Build Dev
-        run: cargo build --all-features --workspace  --examples
-
-      - name: Build Release
-        run: cargo build --release --all-features --workspace --examples
-
       - name: Test Dev
         run: cargo test --all-features --workspace
 
       - name: Test Release
-        run: cargo build --release  --all-features --workspace
+        run: cargo test --release  --all-features --workspace
 
-  build-cross:
+  check-cross:
     name: Build and Test for foreign hardware via cross
     strategy:
       fail-fast: false
@@ -81,7 +75,7 @@ jobs:
             arch: aarch64-pc-windows-msvc
           - node: windows-latest
             arch: x86_64-pc-windows-msvc
-          
+
           # apple aarch64
           - node: macos-latest
             arch: aarch64-apple-ios
@@ -98,10 +92,10 @@ jobs:
         uses: actions/checkout@v3.0.2
 
       - uses: docker-practice/actions-setup-docker@master
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Install
         run: cargo install cross
 
@@ -110,11 +104,11 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
-      - name: Build Dev
+      - name: Setup target
         run: rustup target add ${{ matrix.config.arch }}
-      
+
       - name: Build Dev
-        run: cross build --target ${{ matrix.config.arch }} --all-features --workspace  --examples
-      
+        run: cross test --target ${{ matrix.config.arch }} --all-features --workspace  --examples
+
       - name: Build Relese
-        run: cross build --target ${{ matrix.config.arch }} --all-features --release --workspace  --examples
+        run: cross test --target ${{ matrix.config.arch }} --all-features --release --workspace  --examples
