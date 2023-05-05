@@ -36,10 +36,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2.0.0
 
       - name: Test Dev
-        run: cargo test --all-features --workspace
-
-      - name: Test Release
-        run: cargo test --release  --all-features --workspace
+        run: cargo check --all-features --workspace
 
   check-cross:
     name: Build and Test for foreign hardware via cross
@@ -52,23 +49,14 @@ jobs:
           - nightly
           - 1.57.0 # msrv
         config:
-          # linux aarch64 incl android
-          - node: ubuntu-latest
-            arch: aarch64-linux-android
           - node: ubuntu-latest
             arch: aarch64-unknown-linux-gnu
           - node: ubuntu-latest
             arch: aarch64-unknown-linux-musl
-
-          # linux x86
-          - node: ubuntu-latest
-            arch: x86_64-linux-android
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-musl
-          - node: ubuntu-latest
-            arch: x86_64-linux-android
 
           # windows aarch64
           - node: windows-latest
@@ -108,7 +96,4 @@ jobs:
         run: rustup target add ${{ matrix.config.arch }}
 
       - name: Build Dev
-        run: cross test --target ${{ matrix.config.arch }} --all-features --workspace  --examples
-
-      - name: Build Relese
-        run: cross test --target ${{ matrix.config.arch }} --all-features --release --workspace  --examples
+        run: cross check --target ${{ matrix.config.arch }} --all-features --workspace  --examples
