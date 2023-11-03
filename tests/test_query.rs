@@ -68,7 +68,7 @@ pub fn invalid_short_name() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::NotFound);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
 
@@ -80,7 +80,7 @@ pub fn invalid_min_age() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::NotFound);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
 
@@ -92,6 +92,6 @@ pub fn invalid_max_age() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::NotFound);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
