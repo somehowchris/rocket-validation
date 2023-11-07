@@ -184,13 +184,13 @@ impl<'r, D: Validate + rocket::serde::Deserialize<'r>> FromData<'r> for Validate
         let data_outcome = <Json<D> as FromData<'r>>::from_data(req, data).await;
 
         match data_outcome {
-            Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
+            Outcome::Error((status, err)) => Outcome::Error((status, Err(err))),
             Outcome::Forward(err) => Outcome::Forward(err),
             Outcome::Success(data) => match data.validate() {
                 Ok(_) => Outcome::Success(Validated(data)),
                 Err(err) => {
                     req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
-                    Outcome::Failure((Status::BadRequest, Ok(err)))
+                    Outcome::Error((Status::BadRequest, Ok(err)))
                 }
             },
         }
@@ -207,13 +207,13 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
         let data_outcome = D::from_request(req).await;
 
         match data_outcome {
-            Outcome::Failure((status, err)) => Outcome::Failure((status, Err(err))),
+            Outcome::Error((status, err)) => Outcome::Error((status, Err(err))),
             Outcome::Forward(err) => Outcome::Forward(err),
             Outcome::Success(data) => match data.validate() {
                 Ok(_) => Outcome::Success(Validated(data)),
                 Err(err) => {
                     req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
-                    Outcome::Failure((Status::BadRequest, Ok(err)))
+                    Outcome::Error((Status::BadRequest, Ok(err)))
                 }
             },
         }
