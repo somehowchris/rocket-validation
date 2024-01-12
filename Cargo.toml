@@ -16,7 +16,7 @@ description = "Rocket Guards to support validation using validator"
 path = "src/lib.rs"
 
 [dependencies]
-rocket = { version = "0.5.0-rc.4", default-features = false, features = [
+rocket = { version = "0.5.0", default-features = false, features = [
     "json",
 ] }
 validator = { version = "0.16.1", features = ["derive"] }
