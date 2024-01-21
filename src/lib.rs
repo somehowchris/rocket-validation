@@ -133,12 +133,12 @@ pub struct Error<'a> {
 ///  /* right here ---->*/.register("/", catchers![rocket_validation::validation_catcher])
 ///  }
 ///  ```
-#[catch(400)]
+#[catch(422)]
 pub fn validation_catcher<'a>(req: &'a Request) -> Json<Error<'a>> {
     Json(Error {
-        code: 400,
-        message: "Bad Request. The request could not be understood by the server due to malformed \
-                  syntax.",
+        code: 422,
+        message: "Unprocessable Entity. The request was well-formed \
+                  but was unable to be followed due to semantic errors.",
         errors: req.local_cache(|| CachedValidationErrors(None)).0.as_ref(),
     })
 }
@@ -190,7 +190,7 @@ impl<'r, D: Validate + rocket::serde::Deserialize<'r>> FromData<'r> for Validate
                 Ok(_) => Outcome::Success(Validated(data)),
                 Err(err) => {
                     req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
-                    Outcome::Error((Status::BadRequest, Ok(err)))
+                    Outcome::Error((Status::UnprocessableEntity, Ok(err)))
                 }
             },
         }
@@ -213,7 +213,7 @@ impl<'r, D: Validate + FromRequest<'r>> FromRequest<'r> for Validated<D> {
                 Ok(_) => Outcome::Success(Validated(data)),
                 Err(err) => {
                     req.local_cache(|| CachedValidationErrors(Some(err.to_owned())));
-                    Outcome::Error((Status::BadRequest, Ok(err)))
+                    Outcome::Error((Status::UnprocessableEntity, Ok(err)))
                 }
             },
         }

@@ -74,7 +74,7 @@ pub fn invalid_short_name() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
 
@@ -89,7 +89,7 @@ pub fn invalid_min_age() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
 
@@ -104,7 +104,7 @@ pub fn invalid_max_age() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::HTML));
 }
 
@@ -120,6 +120,6 @@ pub fn invalid_request_catcher_response() {
 
     let response: LocalResponse = req.dispatch();
 
-    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.status(), Status::UnprocessableEntity);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 }
