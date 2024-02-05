@@ -137,8 +137,8 @@ pub struct Error<'a> {
 pub fn validation_catcher<'a>(req: &'a Request) -> Json<Error<'a>> {
     Json(Error {
         code: 422,
-        message: "Unprocessable Entity. The request was well-formed \
-                  but was unable to be followed due to semantic errors.",
+        message: "Unprocessable Entity. The request was well-formed but was unable to be followed \
+                  due to semantic errors.",
         errors: req.local_cache(|| CachedValidationErrors(None)).0.as_ref(),
     })
 }
