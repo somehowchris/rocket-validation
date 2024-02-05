@@ -94,7 +94,7 @@ use rocket::{
 use std::fmt::Debug;
 pub use validator::{Validate, ValidationErrors};
 
-////  Struct used for Request Guards
+///  Struct used for Request Guards
 #[derive(Clone, Debug)]
 pub struct Validated<T>(pub T);
 
