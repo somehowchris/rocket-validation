@@ -71,6 +71,6 @@ jobs:
         with:
           toolchain: stable
 
-      - uses: katyo/publish-crates@v1
+      - uses: katyo/publish-crates@v2
         with:
             dry-run: true
