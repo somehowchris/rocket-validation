@@ -94,7 +94,7 @@ jobs:
       - uses: docker-practice/actions-setup-docker@master
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Install
         run: cargo install cross
