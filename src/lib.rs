@@ -85,6 +85,7 @@ extern crate rocket;
 use rocket::{
     data::{Data, FromData, Outcome as DataOutcome},
     form,
+    form::name::NameBuf,
     form::{DataField, FromForm, ValueField},
     http::Status,
     outcome::Outcome,
@@ -277,8 +278,8 @@ impl<'r, T: Validate + FromForm<'r>> FromForm<'r> for Validated<T> {
                     .into_errors()
                     .into_iter()
                     .map(|e| form::Error {
-                        name: Some(e.0.into()),
-                        kind: form::error::ErrorKind::Validation(std::borrow::Cow::Borrowed(e.0)),
+                        name: Some(NameBuf::from(e.0.clone().into_owned())),
+                        kind: form::error::ErrorKind::Validation(e.0),
                         value: None,
                         entity: form::error::Entity::Value,
                     })
