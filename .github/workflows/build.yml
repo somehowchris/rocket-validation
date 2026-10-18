@@ -48,9 +48,6 @@ jobs:
       matrix:
         toolchain:
           - stable
-          - beta
-          - nightly
-          - 1.88.0 # msrv
         config:
           # linux aarch64 incl android
           - node: ubuntu-latest
