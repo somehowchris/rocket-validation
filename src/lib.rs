@@ -73,6 +73,8 @@
 //! }
 //! ```
 #![deny(clippy::all, clippy::cargo)]
+// Rocket has transitive dependencies on multiple versions of several crates.
+#![allow(clippy::multiple_crate_versions)]
 #![forbid(unsafe_code)]
 
 #[allow(unused_imports)]
