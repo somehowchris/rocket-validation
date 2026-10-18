@@ -39,7 +39,7 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
-      - uses: Swatinem/rust-cache@v2.7.3
+      - uses: Swatinem/rust-cache@v2.9.2
 
       - name: Test Dev
         run: cargo test --all-features --workspace
@@ -95,7 +95,7 @@ jobs:
       # Docker-based cross builds are supported on Linux runners only.
       - name: Set up Docker Buildx
         if: runner.os == 'Linux' && !contains(matrix.config.arch, 'android')
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - uses: dtolnay/rust-toolchain@master
         with:
