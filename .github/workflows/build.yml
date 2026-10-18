@@ -14,26 +14,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolchain:
-          - stable
-          - beta
-          - nightly
-          - 1.88.0 # msrv
-        config:
-          - node: ubuntu-latest
-          - node: windows-latest
-          - node: macos-latest
-    runs-on: ${{ matrix.config.node }}
+        # Exercise every supported host on stable; compiler-channel coverage
+        # runs on Linux rather than repeating it across all hosts.
+        include:
+          - toolchain: stable
+            node: ubuntu-latest
+          - toolchain: stable
+            node: windows-latest
+          - toolchain: stable
+            node: macos-latest
+          - toolchain: beta
+            node: ubuntu-latest
+          - toolchain: nightly
+            node: ubuntu-latest
+          - toolchain: 1.88.0 # msrv
+            node: ubuntu-latest
+    runs-on: ${{ matrix.node }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.4.0
 
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
-      - uses: Swatinem/rust-cache@v2.7.3
+      - uses: Swatinem/rust-cache@v2.9.2
 
       - name: Test Dev
         run: cargo test --all-features --workspace
@@ -84,12 +90,12 @@ jobs:
     runs-on: ${{ matrix.config.node }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.4.0
 
       # Docker-based cross builds are supported on Linux runners only.
       - name: Set up Docker Buildx
         if: runner.os == 'Linux' && !contains(matrix.config.arch, 'android')
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - uses: dtolnay/rust-toolchain@master
         with:
