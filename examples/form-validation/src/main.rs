@@ -19,7 +19,7 @@ struct HelloData<'a> {
 }
 
 #[get("/hello?<name>&<age>")]
-fn hello(name: &'_ str, age: u8) -> Json<HelloData> {
+fn hello(name: &'_ str, age: u8) -> Json<HelloData<'_>> {
     Json(HelloData { name, age })
 }
 
