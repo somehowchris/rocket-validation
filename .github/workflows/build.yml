@@ -32,7 +32,7 @@ jobs:
     runs-on: ${{ matrix.node }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@v7.0.1
 
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -90,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.config.node }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@v7.0.1
 
       # Docker-based cross builds are supported on Linux runners only.
       - name: Set up Docker Buildx
