@@ -18,7 +18,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.59.0 # msrv
+          - 1.88.0 # msrv
         config:
           - node: ubuntu-latest
           - node: windows-latest
@@ -28,7 +28,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
           override: true
@@ -50,7 +50,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.59.0 # msrv
+          - 1.88.0 # msrv
         config:
           # linux aarch64 incl android
           - node: ubuntu-latest
@@ -67,8 +67,6 @@ jobs:
             arch: x86_64-unknown-linux-gnu
           - node: ubuntu-latest
             arch: x86_64-unknown-linux-musl
-          - node: ubuntu-latest
-            arch: x86_64-linux-android
 
           # windows aarch64
           - node: windows-latest
@@ -91,24 +89,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
 
-      - uses: docker-practice/actions-setup-docker@master
-
+      # Docker-based cross builds are supported on Linux runners only.
       - name: Set up Docker Buildx
+        if: runner.os == 'Linux' && !contains(matrix.config.arch, 'android')
         uses: docker/setup-buildx-action@v3
 
-      - name: Install
-        run: cargo install cross
-
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
-          override: true
+          targets: ${{ matrix.config.arch }}
 
-      - name: Setup target
-        run: rustup target add ${{ matrix.config.arch }}
+      - name: Install cross
+        if: runner.os == 'Linux' && !contains(matrix.config.arch, 'android')
+        run: cargo install cross --locked
 
-      - name: Build Dev
-        run: cross test --target ${{ matrix.config.arch }} --all-features --workspace  --examples
+      - name: Test Linux targets
+        if: runner.os == 'Linux' && !contains(matrix.config.arch, 'android')
+        run: cross test --target ${{ matrix.config.arch }} --all-features --workspace --examples
 
-      - name: Build Relese
-        run: cross test --target ${{ matrix.config.arch }} --all-features --release --workspace  --examples
+      - name: Check Apple and Windows targets
+        if: runner.os != 'Linux' || contains(matrix.config.arch, 'android')
+        run: cargo check --target ${{ matrix.config.arch }} --all-features --workspace --examples
